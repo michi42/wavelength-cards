@@ -1,0 +1,86 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[protrusion=true,expansion=true]{microtype}
+\usepackage[margin=15mm]{geometry}
+\usepackage{array,pdflscape,tikz,pgfplots}
+\usetikzlibrary{positioning,shapes,shadows,arrows,backgrounds,fit}
+\definecolor{color0}{cmyk}{0,0,0,0}
+\definecolor{color1}{cmyk}{0,0.5,0.5,0}
+\definecolor{color2}{cmyk}{0.35,0.1,0,0}
+\definecolor{color3}{cmyk}{0,0.3,0.2,0}
+\definecolor{color4}{cmyk}{0,0.3,0.9,0}
+\definecolor{color5}{cmyk}{0.4,0,0.3,0}
+\definecolor{color6}{cmyk}{0.25,0.4,0.0,0}
+
+\usepackage{datatool}
+\DTLsetseparator{ - }
+\DTLloaddb[noheader, keys={litem,ritem}]{cardlist}{cardlist.txt}
+
+\newcommand\wlcard[2]{  \begin{tikzpicture}
+    \draw[line width=1pt] (0,0) rectangle (6.6cm,4.3cm);
+    \fill[color\the\value{lcol}] (0,0) rectangle (3.3cm,4.3cm) node [text width=2.8cm, text centered, black, below right] at (0.05cm,2.8cm) {
+            \hspace*{0pt}#1
+    };
+    \fill[color\the\value{rcol}] (3.25cm,0cm) rectangle (6.6cm,4.3cm) node [text width=2.8cm, text centered, black, below right] at (3.35cm,2.8cm) {
+            \hspace*{0pt}#2
+    };
+    \draw[arrows={angle 90-},line width=1.2pt] (1cm,3.2cm) -- (2cm,3.2cm);
+    \draw[arrows={-angle 90},line width=1.2pt] (4.45cm,3.2cm) -- (5.45cm,3.2cm);
+  \end{tikzpicture}
+  \addtocounter{lcol}{1}
+  \addtocounter{rcol}{2}
+  \ifnum\value{lcol}=\value{rcol}
+  \addtocounter{rcol}{1}
+  \fi
+  \ifnum\value{lcol}>6
+  \setcounter{lcol}{0}
+  \fi
+  \ifnum\value{rcol}>6
+  \addtocounter{rcol}{-7}
+  \fi
+  \ifnum\value{lcol}=\value{rcol}
+  \addtocounter{rcol}{1}
+  \fi}
+  
+  \newcounter{lcol}
+  \newcounter{rcol}
+  \addtocounter{rcol}{2}
+\setlength{\parindent}{0cm}
+\setlength{\tabcolsep}{0.05cm}
+
+\begin{document}
+\sffamily
+\fontseries{bx}
+\fontsize{12}{15}
+\selectfont
+\pagestyle{empty}
+
+\begin{landscape}
+\begin{tabular}{p{6.6cm} p{6.6cm} p{6.6cm} p{6.6cm}}
+\newcounter{cx}
+\newcounter{cy}
+\DTLforeach*
+{cardlist}
+{\litem=litem,\ritem=ritem}
+{
+	\wlcard{\litem}{\ritem}
+	\addtocounter{cx}{1}
+	\ifnum\value{cx}=4
+	\setcounter{cx}{0}
+	\addtocounter{cy}{1}
+	\\[-0.63cm]
+	\else
+	&
+	\fi
+	\ifnum\value{cy}=4
+	\setcounter{cy}{0}
+	\setcounter{cx}{0}
+	\DTLiflastrow{}{\end{tabular}\newpage
+	\begin{tabular}{p{6.6cm} p{6.6cm} p{6.6cm} p{6.6cm}}}
+	\fi
+}
+\end{tabular}
+
+\end{landscape}
+\end{document}
